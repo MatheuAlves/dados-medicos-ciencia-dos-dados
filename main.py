@@ -6,8 +6,9 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import time
 import pandas as pd
+import os
 
-# # Abrindo instância do Chrome
+# Configurando o navegador
 service = Service()
 options = webdriver.ChromeOptions()
 driver = webdriver.Chrome(service=service, options=options)
@@ -22,7 +23,6 @@ time.sleep(2)
 # Aceitando cookies
 botao_aceito = driver.find_element(By.CLASS_NAME, "button")
 botao_aceito.click()
-
 time.sleep(2)
 
 # Selecionando UF e Município
@@ -54,27 +54,19 @@ time.sleep(1)
 # Enviando formulário
 botao_enviar = driver.find_element(By.CLASS_NAME, "btnPesquisar")
 botao_enviar.click()
-
-time.sleep(5)
+time.sleep(7)
 
 # Inicializando lista para armazenar os dados
 dados_medicos = []
 
-# Função para verificar e lidar com CAPTCHA
-def resolver_captcha():
-    try:
-        # Aguarda por um elemento que indique a presença do CAPTCHA
-        WebDriverWait(driver, 1).until(
-            EC.presence_of_element_located((By.XPATH, "//div[contains(text(), 'Eu não sou um robô')]"))
-        )
-        print("CAPTCHA detectado. Resolva manualmente e pressione Enter para continuar...")
-        input()  # Aguarda resolução manual do CAPTCHA
-    except:
-        pass  # Se nenhum CAPTCHA for detectado, continua normalmente
+# Variável para definir a página inicial
+pagina_inicial = 1
+
+# Nome do arquivo CSV
+nome_arquivo_csv = "medicos.csv"
 
 # Função para coletar dados da página atual
 def coletar_dados_pagina():
-    resolver_captcha()  # Verifica se há um CAPTCHA antes de prosseguir
     card_body = driver.find_elements(By.CLASS_NAME, "card-body")
     for card in card_body:
         nome = card.find_element(By.TAG_NAME, "h4").text
@@ -110,8 +102,28 @@ def coletar_dados_pagina():
         telefone = telefone_div.text.split("Telefone:")[-1].strip()
         
         dados_medicos.append([nome, crm, data_inscricao, primeira_inscricao, inscricao, situacao, ", ".join(especialidades), endereco, telefone])
+    salvar_csv(dados_medicos,["Nome", "CRM", "Data Inscrição", "Primeira Inscrição", "Inscrição", "Situação", "Especialidades", "Endereço", "Telefone"],nome_arquivo_csv)
+    dados_medicos.clear()
 
-# Extraindo número total de páginas
+# Função para salvar os dados no arquivo CSV
+def salvar_csv(dados, colunas, nome_arquivo):
+    if not os.path.isfile(nome_arquivo):  # Se o arquivo não existir, cria com cabeçalho
+        df = pd.DataFrame(dados, columns=colunas)
+        df.to_csv(nome_arquivo, index=False, encoding="utf-8")
+    else:  # Se o arquivo já existir, anexa sem duplicar cabeçalho
+        df = pd.DataFrame(dados, columns=colunas)
+        df.to_csv(nome_arquivo, index=False, encoding="utf-8", mode="a", header=False)
+
+# Se a página inicial for maior que 1, começa da primeira página até chegar na página inicial
+if pagina_inicial > 1:
+    # Itera até chegar na página inicial
+    for page in range(1, pagina_inicial):
+        print(f"Navegando para a página {page}...")
+        # Navega para a próxima página
+        next_page = driver.find_element(By.XPATH, f'//li[@data-num="{page + 1}"]/a')
+        next_page.click()
+        time.sleep(1)  # Ajuste conforme necessário
+        
 try:
     last_page = driver.find_element(By.CLASS_NAME, "paginationjs-last")
     total_pages = int(last_page.get_attribute("data-num"))
@@ -120,7 +132,7 @@ except:
     total_pages = 1  # Caso não haja paginação
 
 # Iterando por todas as páginas
-for page in range(1, total_pages + 1):
+for page in range(pagina_inicial, total_pages + 1):
     print(f"Coletando dados da página {page}...")
     coletar_dados_pagina()
     
@@ -128,13 +140,8 @@ for page in range(1, total_pages + 1):
     if page < total_pages:
         next_page = driver.find_element(By.XPATH, f'//li[@data-num="{page + 1}"]/a')
         next_page.click()
-        time.sleep(2)  # Ajuste conforme necessário
+        time.sleep(1)  
 
-# Criando o DataFrame
-df = pd.DataFrame(dados_medicos, columns=["Nome", "CRM", "Data Inscrição", "Primeira Inscrição", "Inscrição", "Situação", "Especialidades", "Endereço", "Telefone"])
-
-# Salvando em CSV
-df.to_csv("medicos.csv", index=False, encoding="utf-8")
-
-print("Arquivo CSV gerado com sucesso!")
+# Fechando o navegador
+print(f"Dados salvos em {nome_arquivo_csv} com sucesso!")
 driver.quit()
