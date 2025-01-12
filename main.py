@@ -19,8 +19,8 @@ url = "https://portal.cfm.org.br/busca-medicos"
 driver.get(url)
 
 # Variável para definir a página inicial
-pagina_inicial = 2361
-id_municipio = "2754"
+pagina_inicial = 1
+id_municipio = "3206"
 aleatorio = random.uniform(3, 6)
 
 time.sleep(1)
