@@ -1,0 +1,5 @@
+Questões
+
+- Qual o total de médicos por cidade e por especialidade?
+- Rank de médicos por tempo de atuação
+- Quantidade de médicos por tipo de inscrição ao longo do tempo

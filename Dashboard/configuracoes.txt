@@ -1,0 +1,28 @@
+Cores:
+
+- AZUIS:
+
+#0D47A1 – Azul Escuro
+#1565C0 – Azul Clássico
+#1976D2 – Azul Médio
+#1E88E5 – Azul Brilhante
+#2196F3 – Azul Claro
+#42A5F5 – Azul Suave
+#64B5F6 – Azul Pastel
+#3FC2FD – Azul Claro Médio
+#90CAF9 – Azul Nevoeiro
+#BBDEFB – Azul Claro Muito Suave
+#E3F2FD – Azul Quase Branco
+
+- CONTRASTES:
+
+#212121 – Preto (escuro e contrastante)
+#424242 – Cinza Escuro (bom para fundo e detalhes)
+#616161 – Cinza Médio (bom para textos e subtítulos)
+#9E9E9E – Cinza Claro (pode ser usado para toques mais suaves)
+#0A1929 – Azul Marinho Escuro (profundo e sofisticado)
+#263238 – Azul Petróleo Escuro (mais suave, mas ainda com boa contraste)
+#37474F – Cinza Azulado Escuro (combinando bem com os azuis)
+#1C2833 – Preto Azulado (forte e perfeito para destacar outros elementos)
+#546E7A – Azul Acinzentado (um tom intermediário entre azul e cinza)
+#7986CB – Azul Claro Acinzentado (para detalhes de contraste mais suaves)
